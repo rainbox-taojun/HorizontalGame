@@ -12,6 +12,9 @@ public class Character : MonoBehaviour
 
     public float runSpeed;
     public float jumpPower;
+    public int damage = 100;
+    public int health = 99;
+    public GameObject deathFX;
 
     void Awake()
     {
@@ -29,6 +32,8 @@ public class Character : MonoBehaviour
         animator.SetFloat("Speed", cc.velocity.magnitude);
         // 更新重力
         pendingVelocity.y += cc.isGrounded ? 0f : Physics.gravity.y * 10f * Time.deltaTime;
+
+        AttackCheck();
     }
 
     public void Move(float inputX)
@@ -70,16 +75,35 @@ public class Character : MonoBehaviour
 
     public void Death()
 	{
+        var fx = Instantiate(deathFX, transform.position, Quaternion.Euler(Vector3.zero));
+        Destroy(fx, 2);
+        Destroy(gameObject);
 
-	}
+    }
 
     public void TakeDamage(Character inflicter, int damage)
 	{
+        inflicter.Jump();
+        health -= damage;
 
+        if (health <= 0)
+		{
+            Death();
+		}
 	}
 
     public void AttackCheck()
 	{
+        var dist = cc.height / 2;
 
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, dist + 0.05f))
+		{
+            if (hit.transform.GetComponent<Character>() && hit.transform != transform)
+			{
+                hit.transform.GetComponent<Character>().TakeDamage(this, damage);
+
+            }
+		}
 	}
 }
