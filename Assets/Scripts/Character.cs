@@ -22,7 +22,7 @@ public class Character : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         // ÒÆ¶¯
         pendingVelocity.z = 0;
